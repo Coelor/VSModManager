@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="VSModManager.App/VSModManager.App.csproj" />
+  <Project Path="VSModManager.Core.Tests/VSModManager.Core.Tests.csproj" />
+  <Project Path="VSModManager.Core/VSModManager.Core.csproj" />
+</Solution>
