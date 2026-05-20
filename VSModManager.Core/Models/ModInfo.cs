@@ -15,6 +15,7 @@
         public bool? RequiredOnClient { get; init; }
         public bool? RequiredOnServer { get; init; }
         public Dictionary<string, string>? Dependencies { get; init; } // ModId -> Version
+        public string? IconPath { get; init; }
 
     }
 }

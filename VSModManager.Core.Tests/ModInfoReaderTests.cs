@@ -1,9 +1,4 @@
 ﻿using VSModManager.Core.Services;
-using VSModManager.Core.Models;
-using Xunit;
-using System.IO;
-using System.Text.Json;
-using System.IO.Compression;
 
 namespace VSModManager.Core.Tests
 {
@@ -12,11 +7,11 @@ namespace VSModManager.Core.Tests
         DirectoryInfo? _tempDir;
 
         [Fact]
-        public async Task ReadFromFolderAsync()
+        public async Task ReadFromFolderAsync_ValidJson_ReturnsCorrectModInfo()
         {
             _tempDir = Directory.CreateTempSubdirectory(prefix: "VSModManager");
 
-            string filePath = Path.Combine(_tempDir.ToString(), "modinfo.json");
+            string filePath = Path.Combine(_tempDir.FullName, "modinfo.json");
 
             File.WriteAllText(filePath, """
                 {  
@@ -24,8 +19,14 @@ namespace VSModManager.Core.Tests
                     "name": "Test Mod",
                     "version": "1.0.0",
                     "modid": "test-mod",
-                    "author": "Test Author",
-                    "description": "A test mod for unit testing."
+                    "authors": ["Test Author"],
+                    "description": "A test mod for unit testing.",
+                    "side": "universal",
+                    "requiredOnClient": true,
+                    "requiredOnServer": true,
+                    "dependencies": { "game": "1.22.2" },
+                    "website": "https://github.com/Coelor/vsmodmanager",
+                    "iconpath": "modicon.png"
                 }
                 """);
 
@@ -33,12 +34,23 @@ namespace VSModManager.Core.Tests
             CancellationToken ct = source.Token;
 
             var reader = new ModInfoReader();
-            var result = await reader.ReadFromFolderAsync(folderPath: _tempDir.ToString(), ct: ct);
+            var result = await reader.ReadFromFolderAsync(folderPath: _tempDir.FullName, ct: ct);
 
             Assert.NotNull(result);
             Assert.Equal("Test Mod", result.Name);
             Assert.Equal("1.0.0", result.Version);
             Assert.Equal("code", result.Type);
+            Assert.Equal("test-mod", result.ModId);
+            Assert.Equal(["Test Author"], result.Authors);
+            Assert.Equal("A test mod for unit testing.", result.Description);
+            Assert.Equal("universal", result.Side);
+            Assert.Equal(true, result.RequiredOnClient);
+            Assert.Equal(true, result.RequiredOnServer);
+            Assert.NotNull(result?.Dependencies);
+            Assert.Equal("1.22.2", result?.Dependencies?["game"]);
+            Assert.Equal("https://github.com/Coelor/vsmodmanager", result.Website);
+            Assert.Equal("modicon.png", result.IconPath);
+
 
         }
 

@@ -2,7 +2,7 @@
 
 namespace VSModManager.Core.Services
 {
-    interface IModInfoReader
+    public interface IModInfoReader
     {
         Task<ModInfo?> ReadFromFolderAsync(string folderPath, CancellationToken ct = default);
     }
