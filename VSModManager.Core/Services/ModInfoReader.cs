@@ -19,7 +19,6 @@ namespace VSModManager.Core.Services
             var json = File.ReadAllText(jsonPath);
             modInfo = JsonSerializer.Deserialize<ModInfo>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             
-
             return modInfo;
         }
     }
