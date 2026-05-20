@@ -7,37 +7,41 @@ using System.IO.Compression;
 
 namespace VSModManager.Core.Tests
 {
-    public class ModInfoReaderTests
+    public class ModInfoReaderTests : IDisposable
     {
+        DirectoryInfo? _tempDir;
+
         [Fact]
-        public void ReadFromFolderAsync_NullFolder()
+        public async Task ReadFromFolderAsync_NullFolder()
         {
+            _tempDir = Directory.CreateTempSubdirectory(prefix: "VSModManager");
+
+            string filePath = Path.Combine(_tempDir.ToString(), "modinfo.json");
+
+            File.WriteAllText(filePath, """
+                {                
+                    "name": "Test Mod",
+                    "version": "1.0.0",
+                    "author": "Test Author",
+                    "description": "A test mod for unit testing."
+                }
+                """);
+
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken ct = source.Token;
 
-            ModInfoReader reader = new ModInfoReader();
+            var reader = new ModInfoReader();
+            var result = await reader.ReadFromFolderAsync(folderPath: _tempDir.ToString(), ct: ct);
 
-            DirectoryInfo tempDirInfo = Directory.CreateTempSubdirectory(prefix:"VSModManager");
-           
-            string zipPath = Path.Combine(tempDirInfo.FullName, "test.zip");
+            Assert.NotNull(result);
+            Assert.Equal("Test Mod", result.Name);
+            Assert.Equal("1.0.0", result.Version);
 
-            string jsonText = JsonSerializer.Serialize(
-                new ModInfo { Type = "code", Version = "0.1.0", Name = "test-mod" }, 
-                new JsonSerializerOptions { WriteIndented = true }
-            );
+        }
 
-            using var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
-            var zipEntry = archive.CreateEntry("modinfo.json");
-            using var writer = new StreamWriter(zipEntry.Open());
-            writer.Write(jsonText);
-
-            Task<List<ModInfo?>?> results = reader.ReadFromFolderAsync(tempDirInfo.ToString(), ct:ct);
-
-            results.Start();
-
-            Assert.Single(results);
-
-            tempDirInfo.Delete(recursive: true);
+        public void Dispose()
+        {
+            _tempDir?.Delete(recursive: true);
         }
     }
 }

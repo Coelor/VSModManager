@@ -10,27 +10,17 @@ namespace VSModManager.Core.Services
 {
     public class ModInfoReader : IModInfoReader
     {
-        public async Task<List<ModInfo?>?> ReadFromFolderAsync(string folderPath, CancellationToken ct)
+        public async Task<ModInfo?> ReadFromFolderAsync(string folderPath, CancellationToken ct)
         {
-            return await Task.Run(() =>
-            {
-                List<ModInfo?> modInfos = new List<ModInfo?>();
 
-                foreach (var zipPath in Directory.EnumerateFiles(folderPath, "*.zip", SearchOption.TopDirectoryOnly))
-                {
-                    using var archive = ZipFile.OpenRead(zipPath);
-                    var json = archive.GetEntry("modinfo.json");
-                    if (json == null) continue;
+            ModInfo? modInfo;
 
-                    using var stream = json.Open();
-                    var modInfo = JsonSerializer.Deserialize<ModInfo>(stream);
+            var jsonPath = Path.Combine(folderPath, "modinfo.json");
+            var json = File.ReadAllText(jsonPath);
+            modInfo = JsonSerializer.Deserialize<ModInfo>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            
 
-                    if (modInfo != null)
-                        modInfos.Add(modInfo);
-                }
-
-                return modInfos;
-            });
+            return modInfo;
         }
     }
 }
