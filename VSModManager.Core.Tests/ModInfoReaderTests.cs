@@ -58,35 +58,32 @@ namespace VSModManager.Core.Tests
         [Fact]
         public async Task ReadFromZipAsync_ValidJson_ReturnsCorrectModInfo()
         {
-            //string tempZipPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
+            string tempZipPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
             string testZipPath = Path.Combine(AppContext.BaseDirectory + "../../../TestFiles/testmod_1.0.0.zip");
 
-            //try
-            //{
-            //    await using (FileStream zipStream = new FileStream(testZipPath, FileMode.Create))
-            //    {
-            //        await using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
-            //        {
-            //            var entry = archive.CreateEntry("modinfo.json");
-            //            await using (var entryStream = entry.Open())
-            //            using (var writer = new StreamWriter(entryStream))
-            //            {
-            //                await writer.WriteAsync(validJson);
-            //            }
-            //        }
-            //    }
-            //}
+            try
+            {
+                await using (FileStream zipFile = File.Create(tempZipPath))
+                await using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Create))
+                {
+                    ZipArchiveEntry entry = archive.CreateEntry("modinfo.json");
+                    using (StreamWriter writer = new StreamWriter(entry.Open()))
+                    {
+                        await writer.WriteAsync(validJson);
+                    }
+                }
+            }
 
-            //finally
-            //{
-            //    if (File.Exists(tempZipPath))
-            //    {
-            //        File.Delete(tempZipPath);
-            //    }
-            //}
+            finally
+            {
+                if (File.Exists(tempZipPath))
+                {
+                    File.Delete(tempZipPath);
+                }
+            }
 
             var reader = new ModInfoReader();
-            var result = await reader.ReadFromZipAsync(zipPath: testZipPath, ct: CancellationToken.None);
+            var result = await reader.ReadFromZipAsync(zipPath: tempZipPath, ct: CancellationToken.None);
 
             Assert.NotNull(result);
             Assert.Equal("Test Mod", result.Name);
