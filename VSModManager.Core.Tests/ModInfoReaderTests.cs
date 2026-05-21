@@ -23,7 +23,7 @@ namespace VSModManager.Core.Tests
                 }
                 """;
 
-        private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true};
+        private static readonly JsonSerializerOptions jso = new() { PropertyNameCaseInsensitive = true};
 
         [Fact]
         public async Task ReadFromFolderAsync_ValidJson_ReturnsCorrectModInfo()
@@ -49,8 +49,8 @@ namespace VSModManager.Core.Tests
             Assert.Equal(true, result.RequiredOnServer);
             Assert.NotNull(result?.Dependencies);
             Assert.Equal("1.22.2", result?.Dependencies?["game"]);
-            Assert.Equal("https://github.com/Coelor/vsmodmanager", result.Website);
-            Assert.Equal("modicon.png", result.IconPath);
+            Assert.Equal("https://github.com/Coelor/vsmodmanager", result?.Website);
+            Assert.Equal("modicon.png", result?.IconPath);
 
             _tempDir?.Delete(recursive: true);
         }
@@ -72,6 +72,24 @@ namespace VSModManager.Core.Tests
                         await writer.WriteAsync(validJson);
                     }
                 }
+
+                var reader = new ModInfoReader();
+                var result = await reader.ReadFromZipAsync(zipPath: tempZipPath, ct: CancellationToken.None);
+
+                Assert.NotNull(result);
+                Assert.Equal("Test Mod", result.Name);
+                Assert.Equal("1.0.0", result.Version);
+                Assert.Equal("code", result.Type);
+                Assert.Equal("test-mod", result.ModId);
+                Assert.Equal(["Test Author"], result.Authors);
+                Assert.Equal("A test mod for unit testing.", result.Description);
+                Assert.Equal("universal", result.Side);
+                Assert.Equal(true, result.RequiredOnClient);
+                Assert.Equal(true, result.RequiredOnServer);
+                Assert.NotNull(result?.Dependencies);
+                Assert.Equal("1.22.2", result?.Dependencies?["game"]);
+                Assert.Equal("https://github.com/Coelor/vsmodmanager", result?.Website);
+                Assert.Equal("modicon.png", result?.IconPath);
             }
 
             finally
@@ -81,24 +99,8 @@ namespace VSModManager.Core.Tests
                     File.Delete(tempZipPath);
                 }
             }
-
-            var reader = new ModInfoReader();
-            var result = await reader.ReadFromZipAsync(zipPath: tempZipPath, ct: CancellationToken.None);
-
-            Assert.NotNull(result);
-            Assert.Equal("Test Mod", result.Name);
-            Assert.Equal("1.0.0", result.Version);
-            Assert.Equal("code", result.Type);
-            Assert.Equal("test-mod", result.ModId);
-            Assert.Equal(["Test Author"], result.Authors);
-            Assert.Equal("A test mod for unit testing.", result.Description);
-            Assert.Equal("universal", result.Side);
-            Assert.Equal(true, result.RequiredOnClient);
-            Assert.Equal(true, result.RequiredOnServer);
-            Assert.NotNull(result?.Dependencies);
-            Assert.Equal("1.22.2", result?.Dependencies?["game"]);
-            Assert.Equal("https://github.com/Coelor/vsmodmanager", result.Website);
-            Assert.Equal("modicon.png", result.IconPath);
         }
+
+        
     }
 }

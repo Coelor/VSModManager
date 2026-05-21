@@ -25,22 +25,24 @@ namespace VSModManager.Core.Services
         {
             ModInfo? modInfo;
 
-            using (ZipArchive? archive = ZipFile.OpenRead(zipPath))
+            using (ZipArchive archive = ZipFile.OpenRead(zipPath))
             {
-                ZipArchiveEntry? zipEntry = archive?.GetEntry("modinfo.json");
+                ZipArchiveEntry? zipEntry = archive.GetEntry("modinfo.json");
 
-                using (Stream? stream = zipEntry?.Open())
+                if (zipEntry != null)
                 {
-                    modInfo = await JsonSerializer.DeserializeAsync<ModInfo?>(stream, jso, ct);
-                }                
+                    await using (Stream stream = zipEntry.Open())
+                    {
+                        modInfo = await JsonSerializer.DeserializeAsync<ModInfo?>(utf8Json: stream, jso, ct);
+                    }
+                }
+                else
+                {
+                    modInfo = null;
+                }
             }
 
             return modInfo;
-        }
-
-        public async Task<ModInfo?> ReadAsync(string path, CancellationToken ct)
-        {
-            throw new NotImplementedException();
         }
     }
 }
