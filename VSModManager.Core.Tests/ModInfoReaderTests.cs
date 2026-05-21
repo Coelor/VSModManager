@@ -6,7 +6,7 @@ namespace VSModManager.Core.Tests
 {
     public class ModInfoReaderTests
     {
-        string validJson = """
+        private readonly string validJson = """
                 {  
                     "type": "code",
                     "name": "Test Mod",
@@ -63,11 +63,11 @@ namespace VSModManager.Core.Tests
 
             try
             {
-                await using (FileStream zipFile = File.Create(tempZipPath))
-                await using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Create))
+                using (FileStream zipFile = File.Create(tempZipPath))
+                using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Create))
                 {
                     ZipArchiveEntry entry = archive.CreateEntry("modinfo.json");
-                    using (StreamWriter writer = new StreamWriter(entry.Open()))
+                    await using (StreamWriter writer = new StreamWriter(entry.Open()))
                     {
                         await writer.WriteAsync(validJson);
                     }
