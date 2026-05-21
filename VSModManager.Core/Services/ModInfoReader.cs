@@ -6,7 +6,7 @@ namespace VSModManager.Core.Services
 {
     public class ModInfoReader : IModInfoReader
     {
-        private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
+        private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         public async Task<ModInfo?> ReadFromFolderAsync(string folderPath, CancellationToken ct)
         {
@@ -25,11 +25,11 @@ namespace VSModManager.Core.Services
         {
             ModInfo? modInfo;
 
-            await using (ZipArchive? archive = ZipFile.OpenRead(zipPath))
+            using (ZipArchive? archive = ZipFile.OpenRead(zipPath))
             {
                 ZipArchiveEntry? zipEntry = archive?.GetEntry("modinfo.json");
 
-                await using (Stream? stream = zipEntry?.Open())
+                using (Stream? stream = zipEntry?.Open())
                 {
                     modInfo = await JsonSerializer.DeserializeAsync<ModInfo?>(stream, jso, ct);
                 }                
