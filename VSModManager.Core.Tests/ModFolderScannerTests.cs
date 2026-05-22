@@ -27,7 +27,7 @@ namespace VSModManager.Core.Tests
 
 
         [Fact]
-        public async Task ScanAsync_ValidJson_2ZippedMods_ReturnsCorrectModInfo()
+        public async Task ScanAsync_ValidJson_1ZippedMod_ReturnsCorrectModInfo()
         {
             string tempPath = Directory.CreateTempSubdirectory().FullName;
             string tempZipPath = Path.Combine(tempPath, Path.GetRandomFileName() + ".zip");
