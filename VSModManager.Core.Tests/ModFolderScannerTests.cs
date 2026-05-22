@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
+using VSModManager.Core.Models;
 using VSModManager.Core.Services;
 
 namespace VSModManager.Core.Tests
@@ -44,31 +45,36 @@ namespace VSModManager.Core.Tests
                     }
                 }
 
-                var scanner = new ModFolderScanner();
-                var result = await scanner.ScanAsync(modsFolderPath: tempPath, ct: CancellationToken.None);
+                ModFolderScanner scanner = new ModFolderScanner();
+                IReadOnlyList<InstalledMod> result = await scanner.ScanAsync(modsFolderPath: tempPath, ct: CancellationToken.None);
 
                 Assert.NotNull(result);
-                Assert.Equal(1, result?.Count);
-                Assert.Equal("Test Mod", result[0]?.Name);
-                Assert.Equal("1.0.0", result[0]?.Version);
-                Assert.Equal("code", result[0]?.Type);
-                Assert.Equal("test-mod", result[0]?.ModId);
-                Assert.Equal(["Test Author"], result[0]?.Authors);
-                Assert.Equal("A test mod for unit testing.", result[0]?.Description);
-                Assert.Equal("universal", result[0]?.Side);
-                Assert.True(result[0]?.RequiredOnClient);
-                Assert.True(result[0]?.RequiredOnServer);
-                Assert.NotNull(result[0] ?.Dependencies);
-                Assert.Equal("1.22.2", result[0] ?.Dependencies?["game"]);
-                Assert.Equal("https://github.com/Coelor/vsmodmanager", result[0]?.Website);
-                Assert.Equal("modicon.png", result[0]?.IconPath);
+                Assert.Single(result);
+
+                InstalledMod mod = result[0];
+                Assert.NotNull(mod);
+                Assert.Equal("Test Mod", mod.Info.Name);
+                Assert.Equal("1.0.0", mod.Info.Version);
+                Assert.Equal("code", mod.Info.Type);
+                Assert.Equal("test-mod", mod.Info.ModId);
+                Assert.Equal(["Test Author"], mod.Info.Authors);
+                Assert.Equal("A test mod for unit testing.", mod.Info.Description);
+                Assert.Equal("universal", mod.Info.Side);
+                Assert.True(mod.Info.RequiredOnClient);
+                Assert.True(mod.Info.RequiredOnServer);
+                Assert.NotNull(mod.Info.Dependencies);
+                Assert.Equal("1.22.2", mod.Info.Dependencies?["game"]);
+                Assert.Equal("https://github.com/Coelor/vsmodmanager", mod.Info.Website);
+                Assert.Equal("modicon.png", mod.Info.IconPath);
             }
 
             finally
             {
-                if(Directory.Exists(tempPath)) {
+                if (Directory.Exists(tempPath))
                 {
-                    Directory.Delete(tempPath, recursive: true);
+                    {
+                        Directory.Delete(tempPath, recursive: true);
+                    }
                 }
             }
         }

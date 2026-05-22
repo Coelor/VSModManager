@@ -15,18 +15,12 @@ namespace VSModManager.Core.Services
             using (ZipArchive archive = ZipFile.OpenRead(zipPath))
             {
                 ZipArchiveEntry? zipEntry = archive.GetEntry("modinfo.json");
-
                 if (zipEntry != null)
-                {
-                    await using (Stream stream = zipEntry.Open())
-                    {
+                    using (Stream stream = zipEntry.Open())
                         modInfo = await JsonSerializer.DeserializeAsync<ModInfo?>(utf8Json: stream, jso, ct);
-                    }
-                }
+                
                 else
-                {
                     modInfo = null;
-                }
             }
 
             return modInfo;

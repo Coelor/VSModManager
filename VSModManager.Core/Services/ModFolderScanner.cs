@@ -4,17 +4,20 @@ namespace VSModManager.Core.Services
 {
     public class ModFolderScanner : IModFolderScanner
     {
-        public async Task<IReadOnlyList<InstalledMod?>> ScanAsync(string modsFolderPath, CancellationToken ct)
+        public async Task<IReadOnlyList<InstalledMod>> ScanAsync(string modsFolderPath, CancellationToken ct)
         {
             List<InstalledMod> installedMods = new();
             ModInfoReader modInfoReader = new();
 
-            foreach(string mod in Directory.EnumerateFiles(modsFolderPath, ".zip"))
+            foreach(string modPath in Directory.EnumerateFiles(modsFolderPath, "*.zip"))
             {
-                InstalledMod? installedMod = (InstalledMod?)await modInfoReader.ReadFromZipAsync(mod, ct);
+                ModInfo? modInfo = await modInfoReader.ReadFromZipAsync(modPath, ct);
 
-                if(installedMod != null)
+                if(modInfo != null)
+                {
+                    InstalledMod installedMod = new InstalledMod(modInfo, modPath);
                     installedMods.Add(installedMod);
+                }
             }
 
             return installedMods;
