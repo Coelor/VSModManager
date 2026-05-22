@@ -8,19 +8,6 @@ namespace VSModManager.Core.Services
     {
         private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        public async Task<ModInfo?> ReadFromFolderAsync(string folderPath, CancellationToken ct)
-        {
-            ModInfo? modInfo;
-
-            var jsonPath = Path.Combine(folderPath, "modinfo.json");
-            await using (var json = File.OpenRead(jsonPath))
-            {
-                modInfo = await JsonSerializer.DeserializeAsync<ModInfo>(json, jso, ct);
-            }
-
-            return modInfo;
-        }
-
         public async Task<ModInfo?> ReadFromZipAsync(string zipPath, CancellationToken ct)
         {
             ModInfo? modInfo;
