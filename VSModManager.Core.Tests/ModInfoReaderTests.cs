@@ -26,7 +26,6 @@ namespace VSModManager.Core.Tests
         public async Task ReadFromZipAsync_ValidJson_ReturnsCorrectModInfo()
         {
             string tempZipPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
-            string testZipPath = Path.Combine(AppContext.BaseDirectory + "../../../TestFiles/testmod_1.0.0.zip");
 
             try
             {
