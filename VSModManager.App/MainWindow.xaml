@@ -17,10 +17,14 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Label>Installed Mods</Label>
-        <ListBox Grid.Row="1" x:Name="lstMods"></ListBox>
-        
-        
+
+        <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" Margin="0 5 0 0">Installed Mods</Label>
+        <ListBox Grid.Row="1" Grid.Column="0" x:Name="modsList" Width="100" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0 35 0 0" BorderThickness="0" HorizontalContentAlignment="Center"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="1">
+
+
+        </StackPanel>
 
     </Grid>
 </Window>
