@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Text;
-using VSModManager.Core.Models;
+﻿using VSModManager.Core.Models;
 using VSModManager.Core.Services;
+using VSModManager.Core.Tests.Util;
 
 namespace VSModManager.Core.Tests
 {
@@ -30,23 +27,14 @@ namespace VSModManager.Core.Tests
         [Fact]
         public async Task ScanAsync_ValidJson_1ZippedMod_ReturnsCorrectModInfo()
         {
-            string tempPath = Directory.CreateTempSubdirectory().FullName;
-            string tempZipPath = Path.Combine(tempPath, Path.GetRandomFileName() + ".zip");
+            CreateTempZip tempZipCreater = new(Directory.CreateTempSubdirectory().FullName);
 
             try
             {
-                using (FileStream zipFile = File.Create(tempZipPath))
-                using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Create))
-                {
-                    ZipArchiveEntry entry = archive.CreateEntry("modinfo.json");
-                    await using (StreamWriter writer = new StreamWriter(entry.Open()))
-                    {
-                        await writer.WriteAsync(validJson);
-                    }
-                }
+                await tempZipCreater.Create(validJson);
 
                 ModFolderScanner scanner = new ModFolderScanner();
-                IReadOnlyList<InstalledMod> result = await scanner.ScanAsync(modsFolderPath: tempPath, ct: CancellationToken.None);
+                IReadOnlyList<InstalledMod> result = await scanner.ScanAsync(modsFolderPath: tempZipCreater.TempPath, ct: CancellationToken.None);
 
                 Assert.NotNull(result);
                 Assert.Single(result);
@@ -70,12 +58,7 @@ namespace VSModManager.Core.Tests
 
             finally
             {
-                if (Directory.Exists(tempPath))
-                {
-                    {
-                        Directory.Delete(tempPath, recursive: true);
-                    }
-                }
+                tempZipCreater.Delete();
             }
         }
     }
