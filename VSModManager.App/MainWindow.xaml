@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VSModManager.App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="800">
+        Title="MainWindow"
+        Height="400"
+        Width="800"
+        WindowStartupLocation="CenterScreen"
+        >
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,10 +21,10 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-
-        <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" Margin="0 5 0 0">Installed Mods</Label>
-        <ListBox Grid.Row="1" Grid.Column="0" x:Name="modsList" Width="100" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0 35 0 0" BorderThickness="0" HorizontalContentAlignment="Center"/>
-
+        
+        <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center">Installed Mods</Label>
+        <ListBox Grid.Row="1" Grid.Column="0" x:Name="modsList" Width="100" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0 30 0 5" BorderThickness="0" HorizontalContentAlignment="Center"/>
+        
         <StackPanel Grid.Row="1" Grid.Column="1">
 
 
